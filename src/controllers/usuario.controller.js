@@ -1,4 +1,4 @@
-const {CrearUsuario, ActualizarUser, ObtenerUsuarios, getUserByEmail} = require('../services/usuario.service')
+const {CrearUsuario, ActualizarUser, ObtenerUsuarios, getUserByEmail, LoginUser} = require('../services/usuario.service')
 
 const controller = {};
 
@@ -13,6 +13,25 @@ controller.CrearUserC = async function (req, res) {
         const user = await CrearUsuario(usuarioData);
         res.status(201).json(user);
     } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
+controller.LoginUserC = async(req, res) => {
+
+    const { email, contrasena } = req.body;
+
+    if(!email || !contrasena){
+        return res.status(400).json({ error: 'El email y la contraseña son requeridos' });
+    }
+
+    try {
+        const { token } = await LoginUser(email, contrasena);
+        res.status(200).json({message: 'Inicio de Sesion exitoso', token}); 
+    } catch (error) {
+        if (error.message === 'Usuario no encontrado' || error.message === 'Contraseña incorrecta') {
+            return res.status(401).json({ error: 'Credenciales incorrectas' });
+        }
         res.status(500).json({ error: error.message });
     }
 }

@@ -1,4 +1,5 @@
 const express = require('express');
+require('dotenv').config();
 const usuarioRoutes = require('../routes/usuario.routes')
 
 const Backend = express();
